@@ -12,6 +12,7 @@
     "next": "15.3.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "seconds-to-duration": "^0.0.2",
     "zustand": "^5.0.6"
   },
   "devDependencies": {

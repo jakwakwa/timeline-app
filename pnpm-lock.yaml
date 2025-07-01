@@ -17,6 +17,9 @@ importers:
       react-dom:
         specifier: ^19.0.0
         version: 19.1.0(react@19.1.0)
+      seconds-to-duration:
+        specifier: ^0.0.2
+        version: 0.0.2
       zustand:
         specifier: ^5.0.6
         version: 5.0.6(@types/react@19.1.8)(react@19.1.0)
@@ -1369,6 +1372,9 @@ packages:
 
   scheduler@0.26.0:
     resolution: {integrity: sha512-NlHwttCI/l5gCPR3D1nNXtWABUmBwvZpEQiD4IXSbIDq8BzLIK/7Ir5gTFSGZDUu37K5cMNp0hFtzO38sC7gWA==}
+
+  seconds-to-duration@0.0.2:
+    resolution: {integrity: sha512-cTuYl/8yK4gjS0UfSc3+ciI3g01QBIWog/D3kCxGcQBSuq2N12pznVjR4F9tDQYXRXPtB7SghtLDlWJDpk4sYw==}
 
   semver@6.3.1:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
@@ -3071,6 +3077,8 @@ snapshots:
       is-regex: 1.2.1
 
   scheduler@0.26.0: {}
+
+  seconds-to-duration@0.0.2: {}
 
   semver@6.3.1: {}
 

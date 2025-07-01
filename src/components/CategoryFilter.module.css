@@ -1,0 +1,176 @@
+.container {
+  padding: 20px;
+  background-color: #000;
+  color: #fff;
+}
+
+.title {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  color: #fff;
+}
+
+.categoriesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 15px;
+}
+
+.categoryCard {
+  /* background-color: #333; */
+  border: 1px solid #555;
+  border-radius: 8px;
+  padding: 10px; /* Adjusted padding */
+  text-align: left; /* Align text to top left */
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  font-size: 0.75rem; /* Reduced font size */
+  font-weight: bold;
+  color: #eee;
+  height: 115px; /* Increased height by 15% */
+  position: relative; /* Allow absolute positioning of children */
+  overflow: hidden; /* Hide overflowing content */
+  white-space: normal;
+  line-height: 1.2; /* Reduced line height */
+}
+
+.categoryCard:hover {
+  /* background-color: #555; */
+  border-color: #777;
+}
+
+.categoryCard.selected {
+  /* background-color: #502211; */
+  border-color: #502211;
+  color: #fff;
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+}
+
+.categoryTitle {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 63px; /* Adjusted to provide proper space for smaller image */
+  z-index: 1;
+  text-align: left; /* Ensure title is left-aligned */
+  max-width: calc(100% - 73px); /* Adjusted max-width for smaller image */
+}
+
+.categoryImagePlaceholder {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  width: 48px; /* Reduced by 20% */
+  height: 48px; /* Reduced by 20% */
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  z-index: 0;
+}
+
+.categoryImagePlaceholder img {
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+  transform: rotate(25deg); /* Rotate the image as in the screenshot */
+  opacity: 0.3; /* Changed opacity to 30% */
+}
+
+.resetButton {
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+
+.resetButton:hover {
+  background-color: #5a6268;
+  border-color: #545b62;
+}
+
+/* Full-screen styles */
+.fullScreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #000;
+  z-index: 1000;
+  padding: 40px;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.fullScreenHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #333;
+}
+
+.fullScreenHeader .title {
+  font-size: 2rem;
+  margin: 0;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.closeButton:hover {
+  background-color: #333;
+}
+
+.fullScreenGrid {
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.fullScreenCard {
+  padding: 15px; /* Adjusted padding for full screen */
+  font-size: 1rem;
+  font-weight: bold;
+  min-height: 138px; /* Increased min-height by 15% */
+  white-space: normal;
+  text-align: left; /* Changed from center to left */
+  line-height: 1.2; /* Reduced line height */
+  position: relative; /* Allow absolute positioning of children */
+  overflow: hidden; /* Hide overflowing content */
+}
+
+.fullScreenCard .categoryTitle {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  right: 84px; /* Adjusted to provide proper space for smaller image */
+  font-size: 1.1rem; /* Reduced font size */
+  text-align: left; /* Ensure title is left-aligned */
+  line-height: 1.2; /* Reduced line height */
+  max-width: calc(100% - 99px); /* Adjusted max-width for smaller image */
+}
+
+.fullScreenCard .categoryImagePlaceholder {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 64px; /* Reduced by 20% */
+  height: 64px; /* Reduced by 20% */
+}
+
+.fullScreenCard .categoryImagePlaceholder img {
+  transform: rotate(25deg); /* Keep the same rotation */
+  opacity: 0.3; /* Changed opacity to 30% */
+}
+
+.fullScreenCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
