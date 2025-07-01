@@ -2,6 +2,8 @@
 
 This project is a web application built with Next.js that visualizes a timeline of episodes, allowing users to browse, filter by category, and play audio directly within the interface. It was developed as a solution for a frontend job application assessment.
 
+Developed by [Jacob Kotzee](https://www.linkedin.com/in/jacobkotzee/)
+
 ## Features
 
 * **Timeline Visualization:** Displays episodes chronologically on an interactive timeline.
