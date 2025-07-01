@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { Episode } from '@/store/timelineStore';
 import styles from './AudioPlayer.module.css';
+import { truncateDescription, formatTime } from '@/utils/formatters';
 
 interface AudioPlayerProps {
   episode: Episode;
@@ -19,25 +20,49 @@ export default function AudioPlayer({ episode, onClose }: AudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.src = episode.Audio;
-      audioRef.current.volume = volume;
-      audioRef.current.addEventListener('timeupdate', updateProgress);
-      audioRef.current.addEventListener('ended', onAudioEnd);
-      audioRef.current.addEventListener('loadedmetadata', onLoadedMetadata);
-      audioRef.current.addEventListener('error', onAudioError);
+    const audio = audioRef.current;
+
+    if (audio) {
+      audio.removeEventListener('timeupdate', updateProgress);
+      audio.removeEventListener('ended', onAudioEnd);
+      audio.removeEventListener('loadedmetadata', onLoadedMetadata);
+      audio.removeEventListener('error', onAudioError);
     }
+
+    if (episode.Audio && audio) {
+      audio.src = episode.Audio;
+      audio.volume = volume;
+      audio.addEventListener('timeupdate', updateProgress);
+      audio.addEventListener('ended', onAudioEnd);
+      audio.addEventListener('loadedmetadata', onLoadedMetadata);
+      audio.addEventListener('error', onAudioError);
+      
+      if (isPlaying) {
+        audio.play().catch(e => console.error("Error playing audio on episode change:", e));
+      } else {
+        audio.load();
+        audio.pause();
+      }
+    } else if (audio) {
+      audio.pause();
+      audio.src = '';
+      setIsPlaying(false);
+      setProgress(0);
+      setCurrentTime(0);
+      setDuration(0);
+    }
+
     return () => {
-      if (audioRef.current) {
-        audioRef.current.removeEventListener('timeupdate', updateProgress);
-        audioRef.current.removeEventListener('ended', onAudioEnd);
-        audioRef.current.removeEventListener('loadedmetadata', onLoadedMetadata);
-        audioRef.current.removeEventListener('error', onAudioError);
+      if (audio) {
+        audio.removeEventListener('timeupdate', updateProgress);
+        audio.removeEventListener('ended', onAudioEnd);
+        audio.removeEventListener('loadedmetadata', onLoadedMetadata);
+        audio.removeEventListener('error', onAudioError);
       }
     };
-  }, [episode]); // Remove volume from dependencies
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [episode, isPlaying]); 
 
-  // Separate useEffect for volume changes
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = isMuted ? 0 : volume;
@@ -103,33 +128,16 @@ export default function AudioPlayer({ episode, onClose }: AudioPlayerProps) {
 
   const toggleMute = () => {
     setIsMuted(!isMuted);
-    // Let the useEffect handle the actual volume change
   };
 
   const changeVolume = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVolume = parseFloat(e.target.value);
     setVolume(newVolume);
     setIsMuted(newVolume === 0);
-    // Don't directly set volume here, let the useEffect handle it
-  };
-
-  const formatTime = (time: number) => {
-    if (isNaN(time)) return '0:00';
-    const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
-
-  const truncateDescription = (description: string, maxLength: number) => {
-    if (description.length > maxLength) {
-      return description.substring(0, maxLength) + '...';
-    }
-    return description;
   };
 
   return (
     <div className={styles.audioPlayer}>
-      {/* Episode Image */}
       <div className={styles.episodeImageContainer}>
         {episode.Image && !imageError ? (
           <Image
@@ -143,19 +151,17 @@ export default function AudioPlayer({ episode, onClose }: AudioPlayerProps) {
         ) : (
           <div className={styles.placeholderImage}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-              <path d="12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+              <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
             </svg>
           </div>
         )}
       </div>
 
-      {/* Episode Info */}
       <div className={styles.info}>
         <h3 title={episode.Title}>{episode.Title}</h3>
         <p title={episode.Description}>{truncateDescription(episode.Description, 100)}</p>
       </div>
 
-      {/* Main Controls */}
       <div className={styles.controls}>
         <button onClick={togglePlayPause} className={styles.playPauseButton}>
           {isPlaying ? (
@@ -169,7 +175,6 @@ export default function AudioPlayer({ episode, onClose }: AudioPlayerProps) {
           )}
         </button>
 
-        {/* Progress Bar with Time */}
         <div className={styles.progressContainer}>
           <span className={styles.timeDisplay}>{formatTime(currentTime)}</span>
           <div className={styles.progressBar} onClick={seekTo}>
@@ -182,7 +187,6 @@ export default function AudioPlayer({ episode, onClose }: AudioPlayerProps) {
         </div>
       </div>
 
-      {/* Volume Control */}
       <div className={styles.volumeControl}>
         <button onClick={toggleMute} className={styles.volumeButton}>
           {isMuted || volume === 0 ? (
@@ -210,7 +214,6 @@ export default function AudioPlayer({ episode, onClose }: AudioPlayerProps) {
         />
       </div>
 
-      {/* Close Button */}
       {onClose && (
         <button onClick={onClose} className={styles.closeButton}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">

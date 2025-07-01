@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './CategoryFilter.module.css';
 import Image from 'next/image';
+import { categoryColors as colors } from '@/utils/colors';
 
 interface CategoryFilterProps {
   categories: string[];
@@ -17,11 +18,9 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
   isFullScreen = false,
   onClose,
 }) => {
-  const colors = ['#8C1A33', '#AE2696', '#B95D08', '#036450', '#5F8109', '#1F3363', '#8302E6'];
-
   const handleCategorySelect = (category: string | null) => {
     onSelectCategory(category);
-    // Auto-close the full-screen view after selection
+    
     if (isFullScreen && onClose) {
       onClose();
     }
@@ -49,7 +48,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
             style={{ backgroundColor: colors[index % colors.length] }}
           >
             <span className={styles.categoryTitle}>{category}</span>
-            {/* Placeholder for image - replace with actual image logic later */}
+            
             <div className={styles.categoryImagePlaceholder}>
               <Image src="/christian_cross.svg" alt="Category Icon" width={48} height={48} />
             </div>

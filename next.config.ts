@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
         pathname: '/Images/**',
       },
     ],
+    domains: ['arthurfrost.qflo.co.za'],
   },
   /* config options here */
 };

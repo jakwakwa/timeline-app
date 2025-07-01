@@ -40,11 +40,20 @@ async function fetchAllEpisodes(): Promise<Episode[]> {
   }
 }
 
-function getEpisodes(episodes: Episode[], page: number, pageSize: number, category?: string): { episodes: Episode[]; total: number } {
+function getEpisodes(episodes: Episode[], page: number, pageSize: number, category?: string, search?: string): { episodes: Episode[]; total: number } {
   let filteredEpisodes = episodes;
   
   if (category && category !== 'All') {
-    filteredEpisodes = episodes.filter(episode => episode.Category === category);
+    filteredEpisodes = filteredEpisodes.filter(episode => episode.Category === category);
+  }
+
+  if (search) {
+    const lowerCaseSearch = search.toLowerCase();
+    filteredEpisodes = filteredEpisodes.filter(episode => 
+      episode.Title.toLowerCase().includes(lowerCaseSearch) ||
+      episode.Description.toLowerCase().includes(lowerCaseSearch) ||
+      episode.Category.toLowerCase().includes(lowerCaseSearch)
+    );
   }
 
   const start = (page - 1) * pageSize;
@@ -61,9 +70,10 @@ export async function GET(request: Request) {
   const page = parseInt(searchParams.get('page') || '1', 10);
   const pageSize = parseInt(searchParams.get('pageSize') || '20', 10);
   const category = searchParams.get('category') || undefined;
+  const search = searchParams.get('search') || undefined;
 
   const allEpisodes = await fetchAllEpisodes();
-  const { episodes, total } = getEpisodes(allEpisodes, page, pageSize, category);
+  const { episodes, total } = getEpisodes(allEpisodes, page, pageSize, category, search);
 
   return NextResponse.json({ episodes, total });
 }

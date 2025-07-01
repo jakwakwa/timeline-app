@@ -9,41 +9,35 @@ interface TimelineViewProps {
   selectedCategory: string | null;
   onEpisodePlay: (episode: Episode) => void;
   onToggleCategoryFilter: () => void;
+  searchTerm: string;
+  setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
+  debouncedSearchTerm: string;
+  onClearCategoryFilter: () => void;
 }
 
 const TimelineView: React.FC<TimelineViewProps> = ({
   selectedCategory,
   onEpisodePlay,
   onToggleCategoryFilter,
+  searchTerm,
+  setSearchTerm,
+  debouncedSearchTerm,
+  onClearCategoryFilter,
 }) => {
-  // No need for store data since we're using direct API calls
   const [filteredEpisodes, setFilteredEpisodes] = useState<Episode[]>([]);
-  const [searchTerm, setSearchTerm] = useState<string>('');
   const [page, setPage] = useState(1);
   const [totalEpisodes, setTotalEpisodes] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [globalLoaderGone, setGlobalLoaderGone] = useState(false);
-
-  useEffect(() => {
-    // Wait until the global loader is removed
-    const interval = setInterval(() => {
-      if (!document.getElementById('global-loader')) {
-        setGlobalLoaderGone(true);
-        clearInterval(interval);
-      }
-    }, 50);
-    return () => clearInterval(interval);
-  }, []);
 
   useEffect(() => {
     const fetchEpisodes = async () => {
       setLoading(true);
       setError(null);
       try {
-        setPage(1); // Reset page to 1 when category or search term changes
+        setPage(1);
         const categoryQuery = selectedCategory ? `&category=${selectedCategory}` : '';
-        const searchQuery = searchTerm ? `&search=${searchTerm}` : ''; // Assuming a search parameter will be added to the API
+        const searchQuery = debouncedSearchTerm ? `&search=${debouncedSearchTerm}` : '';
         const res = await fetch(`/api/episodes?page=1&pageSize=20${categoryQuery}${searchQuery}`);
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
@@ -58,14 +52,14 @@ const TimelineView: React.FC<TimelineViewProps> = ({
       }
     };
     fetchEpisodes();
-  }, [selectedCategory, searchTerm]);
+  }, [selectedCategory, debouncedSearchTerm]);
 
   const loadMore = async () => {
     setLoading(true);
     try {
       const nextPage = page + 1;
       const categoryQuery = selectedCategory ? `&category=${selectedCategory}` : '';
-      const searchQuery = searchTerm ? `&search=${searchTerm}` : '';
+      const searchQuery = debouncedSearchTerm ? `&search=${debouncedSearchTerm}` : '';
       const res = await fetch(`/api/episodes?page=${nextPage}&pageSize=20${categoryQuery}${searchQuery}`);
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
@@ -128,16 +122,19 @@ const TimelineView: React.FC<TimelineViewProps> = ({
         {selectedCategory && selectedCategory !== 'All' && (
           <span className={styles.statItem}>
             in {selectedCategory}
+            <button onClick={onClearCategoryFilter} className={styles.clearCategoryButton}>
+              &times;
+            </button>
           </span>
         )}
-        {searchTerm && (
+        {debouncedSearchTerm && (
           <span className={styles.statItem}>
-            matching &quot;{searchTerm}&quot;
+            matching &quot;{debouncedSearchTerm}&quot;
           </span>
         )}
       </div>
 
-      {loading && globalLoaderGone ? (
+      {loading ? (
         <div className={styles.loading}>
           <div className={styles.spinner}></div>
           <p>Loading episodes...</p>

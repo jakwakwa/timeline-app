@@ -1,10 +1,10 @@
-import { useEffect, useState, useRef } from 'react'
-import { useTimelineStore } from '@/store/timelineStore'
+import { useEffect, useState } from 'react'
+import { useTimelineStore, TimelineState } from '@/store/timelineStore'
 import { shallow } from 'zustand/shallow'
 
 // Hydration-safe wrapper for timeline store
 export const useTimelineStoreHydrated = <T>(
-  selector: (state: any) => T,
+  selector: (state: TimelineState) => T,
   equalityFn?: (left: T, right: T) => boolean
 ): T | undefined => {
   const [hydrated, setHydrated] = useState(false)
@@ -31,7 +31,7 @@ export const useTimelineStoreHydrated = <T>(
       
       return unsubscribe
     }
-  }, [hydrated])
+  }, [hydrated, selector, equalityFn])
   
   return hydrated ? data : undefined
 }

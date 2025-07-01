@@ -11,10 +11,20 @@ import { useTimelineStoreHydrated } from '@/hooks/useStore';
 
 export default function HomeClient() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [isHydrated, setIsHydrated] = useState(false);
   const [showCategoryFilter, setShowCategoryFilter] = useState(false);
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState<string>('');
   
-  // Audio player state
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500);
+
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [searchTerm]);
+
   const { currentEpisode, isVisible, playEpisode, closePlayer } = useAudioPlayerStore();
   
   const selector = useCallback((state: TimelineState) => ({
@@ -31,24 +41,30 @@ export default function HomeClient() {
   const { categories = [], fetchCategories, categoriesLoaded = false, episodes = [], loading = false, fetchTimeline } = storeData || {};
 
   useEffect(() => {
-    setIsHydrated(true);
-  }, []);
-  
-  useEffect(() => {
-    if (isHydrated && !categoriesLoaded && fetchCategories) {
+    if (!categoriesLoaded && fetchCategories) {
       fetchCategories();
     }
-  }, [isHydrated, fetchCategories, categoriesLoaded]);
+  }, [fetchCategories, categoriesLoaded]);
 
   useEffect(() => {
-    if (isHydrated && !loading && episodes.length === 0 && fetchTimeline) {
+    if (!loading && episodes.length === 0 && fetchTimeline) {
       fetchTimeline();
     }
-  }, [isHydrated, loading, episodes.length, fetchTimeline]);
+  }, [loading, episodes.length, fetchTimeline]);
 
   const handleEpisodePlay = (episode: Episode) => {
-    console.log('Playing episode:', episode.Title);
     playEpisode(episode);
+  };
+
+  const handleToggleCategoryFilter = () => {
+    setShowCategoryFilter(!showCategoryFilter);
+    
+    setSearchTerm('');
+    setDebouncedSearchTerm('');
+  };
+
+  const handleClearCategoryFilter = () => {
+    setSelectedCategory(null);
   };
 
   return (
@@ -69,11 +85,14 @@ export default function HomeClient() {
         <TimelineView 
           selectedCategory={selectedCategory} 
           onEpisodePlay={handleEpisodePlay}
-          onToggleCategoryFilter={() => setShowCategoryFilter(!showCategoryFilter)}
+          onToggleCategoryFilter={handleToggleCategoryFilter}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          debouncedSearchTerm={debouncedSearchTerm}
+          onClearCategoryFilter={handleClearCategoryFilter}
         />
       </Suspense>
       
-      {/* Audio Player */}
       {isVisible && currentEpisode && (
         <AudioPlayer
           episode={currentEpisode}

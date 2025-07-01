@@ -2,6 +2,9 @@ import Image from 'next/image';
 import { Episode } from '@/store/timelineStore';
 import styles from './EpisodeCard.module.css';
 import { useState } from 'react';
+import { getCategoryColor } from '@/utils/colors';
+import { truncateTitle, formatDate } from '@/utils/formatters';
+
 
 interface EpisodeCardProps {
   episode: Episode;
@@ -13,38 +16,6 @@ export default function EpisodeCard({ episode, onPlay }: EpisodeCardProps) {
   const [imageLoading, setImageLoading] = useState(true);
   const [showFullDescription, setShowFullDescription] = useState(false);
   
-  const truncateTitle = (title: string, maxLength: number) => {
-    if (title.length > maxLength) {
-      return title.substring(0, maxLength) + '...';
-    }
-    return title;
-  };
-
-  // TODO: Remove this console.log after debugging
-  // console.log('episode.Image value:', episode.Image);
-  // console.log('Image URL after processing:', episode.Image);
-  // console.log('episode.AudioSize value:', episode.AudioSize);
-
-  const formatDate = (epochTime: string) => {
-    const date = new Date(parseInt(epochTime) * 1000);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
-
-  const colors = ['#8C1A33', '#AE2696', '#B95D08', '#036450', '#5F8109', '#1F3363', '#8302E6'];
-
-  const getCategoryColor = (category: string) => {
-    let hash = 0;
-    for (let i = 0; i < category.length; i++) {
-      hash = category.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    const index = Math.abs(hash % colors.length);
-    return colors[index];
-  };
-
   return (
     <div className={styles.card}>
       <div className={styles.imageContainer}>
@@ -112,14 +83,6 @@ export default function EpisodeCard({ episode, onPlay }: EpisodeCardProps) {
                 {showFullDescription ? 'Show Less' : 'Show More'}
               </button>
             )}
-          </div>
-        )}
-
-        {episode.Status && (
-          <div className={styles.status}>
-            <span className={`${styles.statusBadge} ${(typeof episode.Status === 'string' ? episode.Status : '').toLowerCase() === 'published' ? styles.published : styles.draft}`}>
-              {episode.Status}
-            </span>
           </div>
         )}
       </div>
