@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useMusicStore } from '@/store/musicStore';
+import { useTimelineStore } from '@/store/timelineStore';
 import EpisodeCard from './EpisodeCard';
 import { Episode } from '@/types/music';
 import styles from './TimelineView.module.css';
@@ -11,7 +11,7 @@ interface TimelineViewProps {
 }
 
 export default function TimelineView({ onEpisodePlay }: TimelineViewProps) {
-  const { timeline, isLoading, error, fetchTimeline } = useMusicStore();
+  const { timeline, isLoading, error, fetchTimeline } = useTimelineStore();
   const [filteredEpisodes, setFilteredEpisodes] = useState<Episode[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchTerm, setSearchTerm] = useState<string>('');
